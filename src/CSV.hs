@@ -30,16 +30,16 @@ type Field = BS.ByteString
 quote :: Word8
 quote = 34
 
-apos :: Word8
-apos = 44
+comma :: Word8
+comma = 44
 
 -- | Parse a CSV records.
 recordParser :: Parser Record
-recordParser = fieldParser `sepBy` (word8 apos)
+recordParser = (fieldParser `sepBy` (word8 comma)) <* (takeWhile $ inClass "\r\n")
 
 -- | Parse a CSV field (quoted or unquoted).
 fieldParser :: Parser Field
-fieldParser = (quotedField <|> unquotedField)
+fieldParser = try (quotedField <|> unquotedField)
 
 -- | Parse an unquoted field.
 unquotedField :: Parser Field
@@ -55,6 +55,19 @@ quotedField = (word8 quote) *> (content) <* (word8 quote)
           ws <- many (notWord8 quote <|> qs)
           return $ BS.pack ws
 
+-- | A conduit Sink to parse CSV records.
+recordSink :: (MonadThrow m) => Sink BS.ByteString m Record
+recordSink = sinkParser recordParser
 
-recordConduit :: (MonadThrow m) => Sink BS.ByteString m Record
-recordConduit = sinkParser recordParser
+recordText :: Record -> BS.ByteString
+recordText r = (BS.intercalate "," fields) `BS.append` "\r\n"
+  where fields = map quoteField r
+        
+quoteField :: Field -> Field
+quoteField f | BS.null f = f
+             | BS.any (inClass ",\n\r\"") f = BS.concat ["\"", escapeField f, "\""]
+             | otherwise = f
+
+escapeField :: Field -> Field
+escapeField f = BS.intercalate "\"\"" $ BS.split quote f
+        

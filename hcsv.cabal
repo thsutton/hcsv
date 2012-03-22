@@ -1,0 +1,31 @@
+Name:                hcsv
+Version:             0.1
+Synopsis:            A command-line utility for manipulating CSV files.
+-- Description:         
+Homepage:            http://thomas-sutton.id.au/hcsv/
+License:             BSD3
+License-file:        LICENSE
+Author:              Thomas Sutton
+Maintainer:          me@thomas-sutton.id.au
+-- Copyright:           
+Category:            Text
+Build-type:          Simple
+-- Extra files to be distributed with the package, such as examples or
+-- a README.
+-- Extra-source-files:  
+Cabal-version:       >=1.2
+
+Executable hcsv
+  Hs-source-dirs:      src
+
+  Main-is:             hcsv.hs
+
+  Other-modules:       CSV
+
+  Build-depends:       base >= 4 && < 5
+                     , attoparsec == 0.10.*
+                     , attoparsec-conduit == 0.3.*
+                     , bytestring == 0.9.*
+                     , conduit == 0.3.*
+                     , filepath == 1.3.*
+  

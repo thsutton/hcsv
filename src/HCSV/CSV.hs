@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module CSV where
-  
+module HCSV.CSV where
 
 -- ( fieldParser
 -- , recordParser
@@ -70,4 +69,3 @@ quoteField f | BS.null f = f
 
 escapeField :: Field -> Field
 escapeField f = BS.intercalate "\"\"" $ BS.split quote f
-        

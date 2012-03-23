@@ -38,9 +38,9 @@ options =
   , Option ['f'] ["field"]   (ReqArg fieldNumber "NUMBER") "Fields to output"
   , Option ['i'] ["input"]   (ReqArg readInput "FILE") "Read from FILE"
   , Option ['o'] ["output"]  (ReqArg writeOutput "FILE") "Write to FILE"
+  , Option ['e'] ["error"]   (OptArg writeErrors "FILE") "Write errors to FILE"
   , Option ['q'] ["quote"]   (NoArg  setQuote) "Quote all fields"
   ]
---  , Option ['e'] ["error"]   (OptArg writeErrors "FILE") "Write errors to FILE"
 
 
 -- | Show the version number and terminate.
@@ -49,11 +49,13 @@ showVersion _ = do
   putStrLn $ "hcsv " ++ version
   exitWith ExitSuccess
 
+
 -- | Show the help message and terminate.
 showHelp :: HCSVOptions -> IO HCSVOptions
 showHelp _ = do
   putStrLn $ usageInfo "hcsv" options
   exitWith ExitSuccess
+
 
 -- | Open and remember the handle to read input from.
 readInput :: FilePath -> HCSVOptions -> IO HCSVOptions

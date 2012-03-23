@@ -14,6 +14,8 @@ import           Data.Conduit
 import           Data.Conduit.Attoparsec
 import           Data.Word
 
+import           HCSV.Options
+
 -- | A series of records.
 type CSV = [Record]
 
@@ -46,7 +48,7 @@ unquotedField = takeWhile (notInClass ",\n\r\"")
 
 -- | Parse a quoted field.
 -- 
--- XXX TODO: Make this suck less.
+-- XXX TODO: Make this suck less. See issue #1
 quotedField :: Parser Field
 quotedField = (word8 quote) *> (content) <* (word8 quote)
   where qs = word8 quote *> word8 quote
@@ -58,14 +60,16 @@ quotedField = (word8 quote) *> (content) <* (word8 quote)
 recordSink :: (MonadThrow m) => Sink BS.ByteString m Record
 recordSink = sinkParser recordParser
 
-recordText :: Record -> BS.ByteString
-recordText r = (BS.intercalate "," fields) `BS.append` "\r\n"
-  where fields = map quoteField r
-        
-quoteField :: Field -> Field
-quoteField f | BS.null f = f
-             | BS.any (inClass ",\n\r\"") f = BS.concat ["\"", escapeField f, "\""]
-             | otherwise = f
+-- | Convert a Record for output.
+recordText :: HCSVOptions -> Record -> BS.ByteString
+recordText opt r = (BS.intercalate "," fields) `BS.append` "\r\n"
+  where fields = map (escapeField' opt) r
 
+-- | Quote a field if requested or required.
+escapeField' :: HCSVOptions -> Field -> Field
+escapeField' opt f = let quote = (optQuoteAll opt) || BS.any (inClass ",\n\r\"") f
+                    in if quote then BS.concat ["\"", escapeField f, "\""] else f
+
+-- | Escape quotes within fields.
 escapeField :: Field -> Field
 escapeField f = BS.intercalate "\"\"" $ BS.split quote f

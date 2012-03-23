@@ -23,4 +23,4 @@ main = do
     (_,       _,       msgs)   -> error $ concat msgs ++ usageInfo "hcsv" options
 
   runResourceT $
-         (sourceHandle (optInput opts) $= sequence CSV.recordSink) $= CL.map CSV.recordText $$ sinkHandle (optOutput opts)
+         (sourceHandle (optInput opts) $= sequence CSV.recordSink) $= CL.map (CSV.recordText opts) $$ sinkHandle (optOutput opts)

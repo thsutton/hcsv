@@ -25,7 +25,7 @@ defaultOptions = Options
   , optInput = stdin
   , optOutput = stdout
   , optError = Just stderr
-  , optQuoteAll = True
+  , optQuoteAll = False
   , optFields = Nothing
   }
 
@@ -33,13 +33,14 @@ defaultOptions = Options
 -- | Options for use by getOpt.
 options :: [OptDescr (HCSVOptions -> IO HCSVOptions)]
 options = 
-  [ Option ['V'] ["version"] (NoArg showVersion)    "show version number"
-  , Option ['h'] ["help"]    (NoArg showHelp) "show the help"
+  [ Option ['V'] ["version"] (NoArg  showVersion)    "show version number"
+  , Option ['h'] ["help"]    (NoArg  showHelp) "show the help"
   , Option ['f'] ["field"]   (ReqArg fieldNumber "NUMBER") "Fields to output"
   , Option ['i'] ["input"]   (ReqArg readInput "FILE") "Read from FILE"
   , Option ['o'] ["output"]  (ReqArg writeOutput "FILE") "Write to FILE"
+  , Option ['q'] ["quote"]   (NoArg  setQuote) "Quote all fields"
   ]
---, Option ['e'] ["error"]   (OptArg writeErrors "FILE") "Write errors to FILE"
+--  , Option ['e'] ["error"]   (OptArg writeErrors "FILE") "Write errors to FILE"
 
 
 -- | Show the version number and terminate.
@@ -83,6 +84,7 @@ writeErrors arg opt = do
   hSetBuffering handle NoBuffering
   return opt { optError = Just handle }
 
+
 -- | Check the fields to output and remember them.
 fieldNumber :: String -> HCSVOptions -> IO HCSVOptions
 fieldNumber arg opt = do
@@ -91,3 +93,9 @@ fieldNumber arg opt = do
     then fail "Field number must be greater than 0!"
     else return ()
   return $ opt { optFields = Just [] }
+
+
+-- | Configure to quote all fields.
+setQuote :: HCSVOptions -> IO HCSVOptions
+setQuote opt = do
+  return $ opt { optQuoteAll = True }

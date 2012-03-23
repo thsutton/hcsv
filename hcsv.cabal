@@ -2,7 +2,8 @@ Name:                hcsv
 Version:             0.2
 Synopsis:            A command-line utility for manipulating CSV files.
 -- Description:         
-Homepage:            http://thomas-sutton.id.au/hcsv/
+Homepage:            https://github.com/thsutton/hcsv
+Bug-reports:         https://github.com/thsutton/hcsv/issues
 License:             BSD3
 License-file:        LICENSE
 Author:              Thomas Sutton

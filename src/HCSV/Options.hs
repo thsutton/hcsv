@@ -3,8 +3,8 @@ module HCSV.Options where
 import           System.Console.GetOpt
 import           System.Exit
 import           System.IO
-
 import           HCSV.Version ( version )
+import           HCSV.Types
 
 data HCSVOptions = Options
   { optName     :: String         -- ^ Name of input.
@@ -12,7 +12,7 @@ data HCSVOptions = Options
   , optOutput   :: Handle         -- ^ Handle to write to.
   , optError    :: Maybe Handle   -- ^ Handle to write errors to (or don't).
   , optQuoteAll :: Bool           -- ^ Quote all fields in output.
-  , optFields   :: Maybe [Int]    -- ^ Fields to output (or all).
+  , optFields   :: Maybe [CSVFieldS]    -- ^ Fields to output (or all).
   }
 
 
@@ -49,11 +49,14 @@ showVersion _ = do
   putStrLn $ "hcsv " ++ version
   exitWith ExitSuccess
 
+-- | Print the help message.
+printHelp :: IO ()
+printHelp = putStrLn $ usageInfo ("hcsv " ++ version) options
 
 -- | Show the help message and terminate.
 showHelp :: HCSVOptions -> IO HCSVOptions
 showHelp _ = do
-  putStrLn $ usageInfo "hcsv" options
+  printHelp  
   exitWith ExitSuccess
 
 

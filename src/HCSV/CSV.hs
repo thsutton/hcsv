@@ -1,10 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module HCSV.CSV where
 
--- ( fieldParser
--- , recordParser
--- ) where
-
 import           Prelude hiding (takeWhile)
 import qualified Data.ByteString as BS
 import           Control.Applicative ((<|>), (<*), (*>), many)
@@ -15,18 +11,7 @@ import           Data.Conduit.Attoparsec
 import           Data.Word
 
 import           HCSV.Options
-
--- | A series of records.
-type CSV = [Record]
-
--- | A record is a list of fields
--- 
--- All records in a file should be the same length, but there's not enough 
--- utility to justify the hassle of implementing this requirement.
-type Record = [Field]
-
--- | A field is a ByteString
-type Field = BS.ByteString
+import           HCSV.Types
 
 quote :: Word8
 quote = 34

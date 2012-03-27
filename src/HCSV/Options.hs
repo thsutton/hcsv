@@ -1,5 +1,7 @@
 module HCSV.Options where
 
+import           Data.List
+import           Data.List.Split
 import           System.Console.GetOpt
 import           System.Exit
 import           System.IO
@@ -93,14 +95,17 @@ writeErrors arg opt = do
 -- | Check the fields to output and remember them.
 fieldNumber :: String -> HCSVOptions -> IO HCSVOptions
 fieldNumber arg opt = do
-  let field = read arg
-  if (field < 1)
-    then fail "Field number must be greater than 0!"
-    else return ()
-  return $ opt { optFields = Just [] }
+  let field = parseSelector arg
+  -- if (field < 1)
+  --   then fail "Field number must be greater than 0!"
+  --   else return ()
+  return $ opt { optFields = Just field }
 
 
 -- | Configure to quote all fields.
 setQuote :: HCSVOptions -> IO HCSVOptions
 setQuote opt = do
   return $ opt { optQuoteAll = True }
+
+parseSelector :: String -> [CSVFieldS]
+parseSelector = map (read) . splitOn ","
